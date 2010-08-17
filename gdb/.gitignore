@@ -1,3 +1,13 @@
-Makefile
-config.cache
-config.log
+ada-exp.c
+ada-lex.c
+c-exp.c
+cp-name-parser.c
+f-exp.c
+jv-exp.c
+m2-exp.c
+objc-exp.c
+observer.h
+observer.inc
+p-exp.c
+TAGS
+stamp-h1

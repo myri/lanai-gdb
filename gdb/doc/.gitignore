@@ -1,2 +1,5 @@
-Makefile
-config.log
+GDBvn.texi
+annotate.info
+gdb.info
+gdbint.info
+stabs.info

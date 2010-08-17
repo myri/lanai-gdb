@@ -1,10 +1,60 @@
-To make the latest gdb with Lanai support:
-	git clone -b lanai ~glenn/git/gdb.git
-	cd gdb
-	./configure --enable-targets=all --prefix=/where/you/want/it
-	make
-	make install
-Then you can open lanai firmware executables:
-	/where/you/want/it/bin/gdb
-	(gdb) file /ufs/glenn/chips_svn/Lanai_Q/Chip/_simulation/mcp
-	Reading symbols from /ufs/glenn/chips_svn/Lanai_Q/Chip/_simulation/mcp...done.
+Currently, this tree implements a lanai-gdb *SKELETON*.  Everything
+works except actually controlling a remote simulation.
+
+To make the gdb-7.1 with Lanai skeleton support:
+
+  git clone -b lanai ~glenn/git/gdb.git
+  cd gdb
+  ./configure --target=lanai --prefix=/path
+  make
+  make install
+	
+Then everything that you expect to work works, except running and stepping:
+
+  /path/bin/lanai-gdb
+  GNU gdb (GDB) 7.1
+  Copyright (C) 2010 Free Software Foundation, Inc.
+  License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+  This is free software: you are free to change and redistribute it.
+  There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+  and "show warranty" for details.
+  This GDB was configured as "--host=x86_64-unknown-linux-gnu --target=lanai".
+  For bug reporting instructions, please see:
+  <http://www.gnu.org/software/gdb/bugs/>.
+  (gdb) file /ufs/glenn/chips_svn/Lanai_Q/Chip/_simulation/mcp
+  Reading symbols from /ufs/glenn/chips_svn/Lanai_Q/Chip/_simulation/mcp...done.
+  (gdb) list main
+  2542
+  2543
+  2544
+  2545
+  2546    main ()
+  2547    {
+  2548      config_inboxes();
+  2549      config_dispatch();
+  2550      config_sm();
+  2551      config_qs();
+  (gdb) info var
+  All defined variables:
+  
+  File mcp.c:
+  handler_t dispatch_table[64];
+  char inbox0[1024];
+  char inbox1[1024];
+  char inbox2[1024];
+  char inbox3[1024];
+  char inbox4[1024];
+  char inbox5[1024];
+  char inbox6[1024];
+  char inbox7[1024];
+  unsigned char phy_bank[72];
+  slice_open_rqst_t rqst;
+  static pci_addr_t addr;
+  static int i;
+  static unsigned int i;
+  static unsigned int *info;
+  static unsigned int *info;
+  static unsigned int *info;
+  static unsigned int *info;
+  (gdb) break main
+  Breakpoint 1 at 0x2ca8: file mcp.c, line 2548.
