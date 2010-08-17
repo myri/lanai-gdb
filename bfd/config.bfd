@@ -756,6 +756,11 @@ case "${targ}" in
     targ_defvec=bfd_elf32_m32c_vec
     ;;
 
+  lanai*-*-*)
+    targ_defvec=lanai3_vec
+    targ_underscore=yes
+    ;;
+
   m32r*le-*-linux*)
     targ_defvec=bfd_elf32_m32rlelin_vec
     targ_selvecs="bfd_elf32_m32rlin_vec  bfd_elf32_m32rlelin_vec"

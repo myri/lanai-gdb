@@ -2078,6 +2078,12 @@ coff_set_arch_mach_hook (bfd *abfd, void * filehdr)
 	}
       break;
 #endif
+#ifdef LANAI3MAGIC
+    case bfd_arch_lanai3:
+      *magicp = LANAI3MAGIC;
+      return TRUE;
+      break;
+#endif
 #ifdef MC68MAGIC
     case MC68MAGIC:
     case M68MAGIC:
@@ -4075,6 +4081,11 @@ coff_write_object_contents (bfd * abfd)
 #define __A_MAGIC_SET__
     internal_a.magic = PE32PMAGIC;
 #endif /* IA64 */
+
+#if defined (LANAI3)
+#define __A_MAGIC_SET__
+    internal_a.magic = LANAI3MAGIC;
+#endif /* LANAI3 */
 
 #if defined(SPARC)
 #define __A_MAGIC_SET__
