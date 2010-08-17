@@ -1,6 +1,6 @@
 /*************************************************************************
  *                                                                       *
- * Table of opcodes for the LANai3.                                      *
+ * Table of opcodes for the Lanai.                                      *
  *                                                                       *
  * Copyright (c) 1994, 1995 by Myricom, Inc.                             *
  * All rights reserved.                                                  *

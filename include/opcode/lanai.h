@@ -1,6 +1,6 @@
 /*************************************************************************
  *                                                                       *
- * Definitions for opcode table for the LANai3.                          *
+ * Definitions for opcode table for the Lanai.                          *
  *                                                                       *
  * Copyright (c) 1994, 1995 by Myricom, Inc.                             *
  * All rights reserved.                                                  *
@@ -59,7 +59,7 @@
 	the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, 
 		USA.   */
 
-/* The LANai3 opcode table (and other related data) is defined in
+/* The Lanai opcode table (and other related data) is defined in
    the opcodes library in lanai-opc.c.  If you change anything here, make
    sure you fix up that file, and vice versa.  */
 

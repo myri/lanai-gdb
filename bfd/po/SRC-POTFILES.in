@@ -35,6 +35,7 @@ coff-h8500.c
 coff-i386.c
 coff-i860.c
 coff-i960.c
+coff-lanai.c
 coff-m68k.c
 coff-m88k.c
 coff-maxq.c
@@ -87,6 +88,7 @@ cpu-ia64.c
 cpu-ip2k.c
 cpu-iq2000.c
 cpu-l1om.c
+cpu-lanai.c
 cpu-lm32.c
 cpu-m10200.c
 cpu-m10300.c

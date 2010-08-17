@@ -1,6 +1,6 @@
 /*************************************************************************
  *                                                                       *
- * Print LANai3 instructions.                                            *
+ * Print Lanai instructions.                                            *
  *                                                                       *
  * Copyright (c) 1994, 1995 by Myricom, Inc.                             *
  * All rights reserved.                                                  *
@@ -56,6 +56,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "ansidecl.h"
 #include "opcode/lanai.h"
@@ -78,7 +79,7 @@ static int
 is_delayed_branch (insn)
      unsigned long insn;
 {
-  unsigned int i;
+  int i;
 
   for (i = 0; i < NUMOPCODES; ++i)
     {
@@ -109,12 +110,13 @@ print_insn_lanai (memaddr, info)
   FILE *stream = info->stream;
   bfd_byte buffer[4];
   unsigned long insn;
-  register unsigned int i;
+  register int i;
 
   if (!opcodes_sorted)
     {
       qsort ((char *) lanai_opcodes, NUMOPCODES,
-	     sizeof (lanai_opcodes[0]), compare_opcodes);
+	     sizeof (lanai_opcodes[0]),
+	     (int (*)(const void *,const void *))compare_opcodes);
       opcodes_sorted = 1;
     }
 

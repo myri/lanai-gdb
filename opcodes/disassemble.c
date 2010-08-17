@@ -46,6 +46,7 @@
 #define ARCH_ia64
 #define ARCH_ip2k
 #define ARCH_iq2000
+#define ARCH_lanai
 #define ARCH_lm32
 #define ARCH_m32c
 #define ARCH_m32r

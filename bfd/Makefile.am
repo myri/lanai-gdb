@@ -94,6 +94,7 @@ ALL_MACHINES = \
 	cpu-ia64.lo \
 	cpu-ip2k.lo \
 	cpu-iq2000.lo \
+	cpu-lanai.lo \
 	cpu-lm32.lo \
 	cpu-m10200.lo \
 	cpu-m10300.lo \
@@ -166,6 +167,7 @@ ALL_MACHINES_CFILES = \
 	cpu-ia64.c \
 	cpu-ip2k.c \
 	cpu-iq2000.c \
+	cpu-lanai.c \
 	cpu-lm32.c \
 	cpu-m10200.c \
 	cpu-m10300.c \
@@ -236,6 +238,7 @@ BFD32_BACKENDS = \
 	coff-i386.lo \
 	coff-i860.lo \
 	coff-i960.lo \
+	coff-lanai.lo \
 	coff-m68k.lo \
 	coff-m88k.lo \
 	coff-maxq.lo \
@@ -420,6 +423,7 @@ BFD32_BACKENDS_CFILES = \
 	coff-i386.c \
 	coff-i860.c \
 	coff-i960.c \
+	coff-lanai.c \
 	coff-m68k.c \
 	coff-m88k.c \
 	coff-maxq.c \

@@ -1,6 +1,6 @@
 /*************************************************************************
  *                                                                       *
- * BFD back-end for LANai3 COFF files.	                                 *
+ * BFD back-end for Lanai COFF files.	                                 *
  *                                                                       *
  * Copyright (c) 1994, 1995 by Myricom, Inc.                             *
  * All rights reserved.                                                  *
@@ -67,7 +67,7 @@
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (3)
 
-#define BADMAG(x) ((x).f_magic != LANAI3MAGIC)
+#define BADMAG(x) ((x).f_magic != LANAIMAGIC)
 
 /* BAD: We don't have pages.  Should make small. */
 #define COFF_PAGE_SIZE 0x8
@@ -92,21 +92,21 @@ bfd_reloc_status_type lanai_perform_reloc_21 PARAMS ((bfd *abfd,
 enum reloc_type
   {
 
-    R_LANAI3_NONE = 0,
-    R_LANAI3_6_S,
-    R_LANAI3_10_S,
-    R_LANAI3_16_S,
-    R_LANAI3_LO16,
-    R_LANAI3_HI16,
-    R_LANAI3_HI16_S,
-    R_LANAI3_21,
-    R_LANAI3_21_F,
-    R_LANAI3_25,
-    R_LANAI3_PC25,
-    R_LANAI3_25_S,
-    R_LANAI3_32,
+    R_LANAI_NONE = 0,
+    R_LANAI_6_S,
+    R_LANAI_10_S,
+    R_LANAI_16_S,
+    R_LANAI_LO16,
+    R_LANAI_HI16,
+    R_LANAI_HI16_S,
+    R_LANAI_21,
+    R_LANAI_21_F,
+    R_LANAI_25,
+    R_LANAI_PC25,
+    R_LANAI_25_S,
+    R_LANAI_32,
 
-    R_LANAI3_max
+    R_LANAI_max
   };
 
 /* This is stolen pretty directly from elf.c.  */
@@ -152,7 +152,7 @@ static reloc_howto_type coff_lanai_howto_table[] =
    pip:  When performing a partial link, some formats must modify
 	 the relocations rather than the data-- this flag signals this
    source: Which parts of the read in data are to be used in the relocation sum
-	(For the LANai3, We never store any relocation data in the 
+	(For the Lanai, We never store any relocation data in the 
 	Instruction, so this 0.)
    dest: Which parts of the read in data are replaced with the relocation.
    pcrel: 
@@ -162,36 +162,36 @@ static reloc_howto_type coff_lanai_howto_table[] =
 #define cgr bfd_coff_generic_reloc
 /*	  type		   rs sz bs pcr   bp complain_overflow		brst
 			    pip  ,source,    dest, pcrel */
-    HOWTO(R_LANAI3_NONE,    0, 2, 0,FALSE, 0,complain_overflow_dont    ,cgr,
-	"R_LANAI3_NONE",    FALSE,0x00000000,0x00000000,TRUE),
-    HOWTO(R_LANAI3_6_S,     0, 2, 6,FALSE, 0,complain_overflow_signed  ,cgr,
-	"R_LANAI3_6_S",     FALSE,0x00000000,0x0000003f,TRUE),
-    HOWTO(R_LANAI3_10_S,    0, 2,10,FALSE, 0,complain_overflow_signed  ,cgr,
-	"R_LANAI3_10_S",    FALSE,0x00000000,0x000003ff,TRUE),
-    HOWTO(R_LANAI3_16_S,    0, 2,16,FALSE, 0,complain_overflow_signed  ,cgr,
-	"R_LANAI3_16_S",    FALSE,0x00000000,0x0000ffff,TRUE),
-    HOWTO(R_LANAI3_LO16,    0, 2,16,FALSE, 0,complain_overflow_dont    ,cgr,
-	"R_LANAI3_LO16",    FALSE,0x00000000,0x0000ffff,TRUE),
-    HOWTO(R_LANAI3_HI16,   16, 2,16,FALSE, 0,complain_overflow_dont    ,cgr,
-	"R_LANAI3_HI16",    FALSE,0x00000000,0x0000ffff,TRUE),
-    HOWTO(R_LANAI3_HI16_S, 16, 2,16,FALSE, 0,complain_overflow_dont    ,lanai_perform_reloc_hi16_s,
-	"R_LANAI3_HI16_S",  FALSE,0x00000000,0x0000ffff,TRUE),
-    HOWTO(R_LANAI3_21,      0, 2,21,FALSE, 0,complain_overflow_unsigned,lanai_perform_reloc_21,
-	"R_LANAI3_21",      FALSE,0x00000000,0x007cffff,TRUE),
-    HOWTO(R_LANAI3_21_F,    0, 2,21,FALSE, 0,complain_overflow_unsigned,lanai_perform_reloc_21,
-	"R_LANAI3_21_F",    FALSE,0x00000000,0x007cfffc,TRUE),
-    HOWTO(R_LANAI3_25,      0, 2,25,FALSE, 0,complain_overflow_bitfield,cgr,
-	"R_LANAI3_25",      FALSE,0x00000000,0x01fffffc,TRUE),
-    HOWTO(R_LANAI3_PC25,    0, 2,25, TRUE, 0,complain_overflow_signed  ,cgr,
-	"R_LANAI3_PC25",    FALSE,0x00000000,0x01fffffc,TRUE),
-    HOWTO(R_LANAI3_25_S,    0, 2,25,FALSE, 0,complain_overflow_signed  ,cgr,
-	"R_LANAI3_25_S",    FALSE,0x00000000,0x01fffffc,TRUE),
-    HOWTO(R_LANAI3_32,      0, 2,32,FALSE, 0,complain_overflow_dont    ,cgr,
-	"R_LANAI3_32",      FALSE,0x00000000,0xffffffff,TRUE),
+    HOWTO(R_LANAI_NONE,    0, 2, 0,FALSE, 0,complain_overflow_dont    ,cgr,
+	"R_LANAI_NONE",    FALSE,0x00000000,0x00000000,TRUE),
+    HOWTO(R_LANAI_6_S,     0, 2, 6,FALSE, 0,complain_overflow_signed  ,cgr,
+	"R_LANAI_6_S",     FALSE,0x00000000,0x0000003f,TRUE),
+    HOWTO(R_LANAI_10_S,    0, 2,10,FALSE, 0,complain_overflow_signed  ,cgr,
+	"R_LANAI_10_S",    FALSE,0x00000000,0x000003ff,TRUE),
+    HOWTO(R_LANAI_16_S,    0, 2,16,FALSE, 0,complain_overflow_signed  ,cgr,
+	"R_LANAI_16_S",    FALSE,0x00000000,0x0000ffff,TRUE),
+    HOWTO(R_LANAI_LO16,    0, 2,16,FALSE, 0,complain_overflow_dont    ,cgr,
+	"R_LANAI_LO16",    FALSE,0x00000000,0x0000ffff,TRUE),
+    HOWTO(R_LANAI_HI16,   16, 2,16,FALSE, 0,complain_overflow_dont    ,cgr,
+	"R_LANAI_HI16",    FALSE,0x00000000,0x0000ffff,TRUE),
+    HOWTO(R_LANAI_HI16_S, 16, 2,16,FALSE, 0,complain_overflow_dont    ,lanai_perform_reloc_hi16_s,
+	"R_LANAI_HI16_S",  FALSE,0x00000000,0x0000ffff,TRUE),
+    HOWTO(R_LANAI_21,      0, 2,21,FALSE, 0,complain_overflow_unsigned,lanai_perform_reloc_21,
+	"R_LANAI_21",      FALSE,0x00000000,0x007cffff,TRUE),
+    HOWTO(R_LANAI_21_F,    0, 2,21,FALSE, 0,complain_overflow_unsigned,lanai_perform_reloc_21,
+	"R_LANAI_21_F",    FALSE,0x00000000,0x007cfffc,TRUE),
+    HOWTO(R_LANAI_25,      0, 2,25,FALSE, 0,complain_overflow_bitfield,cgr,
+	"R_LANAI_25",      FALSE,0x00000000,0x01fffffc,TRUE),
+    HOWTO(R_LANAI_PC25,    0, 2,25, TRUE, 0,complain_overflow_signed  ,cgr,
+	"R_LANAI_PC25",    FALSE,0x00000000,0x01fffffc,TRUE),
+    HOWTO(R_LANAI_25_S,    0, 2,25,FALSE, 0,complain_overflow_signed  ,cgr,
+	"R_LANAI_25_S",    FALSE,0x00000000,0x01fffffc,TRUE),
+    HOWTO(R_LANAI_32,      0, 2,32,FALSE, 0,complain_overflow_dont    ,cgr,
+	"R_LANAI_32",      FALSE,0x00000000,0xffffffff,TRUE),
 #undef cgr
 };
 
-#define LANAI3 1		/* Customize coffcode.h */
+#define LANAI 1		/* Customize coffcode.h */
 
 struct coff_reloc_map {
   bfd_reloc_code_real_type bfd_reloc_val;
@@ -200,20 +200,20 @@ struct coff_reloc_map {
 
 static CONST struct coff_reloc_map lanai_reloc_map[] =
 {
-    {BFD_RELOC_NONE,		R_LANAI3_NONE}, /* no relocation */
-    {BFD_RELOC_LANAI3_6_S,	R_LANAI3_6_S},
-    {BFD_RELOC_LANAI3_10_S,	R_LANAI3_10_S},  /* 10 bit signed */
-    {BFD_RELOC_16,		R_LANAI3_16_S},  /* 16 bit signed */
-    {BFD_RELOC_LO16,		R_LANAI3_LO16}, 
-    {BFD_RELOC_HI16,		R_LANAI3_HI16},
-    {BFD_RELOC_HI16_S,		R_LANAI3_HI16_S},
-    {BFD_RELOC_LANAI3_21,	R_LANAI3_21},
-    {BFD_RELOC_LANAI3_21_F,	R_LANAI3_21_F},
-    {BFD_RELOC_LANAI3_25,	R_LANAI3_25},
-    {BFD_RELOC_LANAI3_PC25,	R_LANAI3_PC25},
-    {BFD_RELOC_LANAI3_25_S,	R_LANAI3_25_S},
-    {BFD_RELOC_32,		R_LANAI3_32},
-    {BFD_RELOC_CTOR,		R_LANAI3_32},
+    {BFD_RELOC_NONE,		R_LANAI_NONE}, /* no relocation */
+    {BFD_RELOC_LANAI_6_S,	R_LANAI_6_S},
+    {BFD_RELOC_LANAI_10_S,	R_LANAI_10_S},  /* 10 bit signed */
+    {BFD_RELOC_16,		R_LANAI_16_S},  /* 16 bit signed */
+    {BFD_RELOC_LO16,		R_LANAI_LO16}, 
+    {BFD_RELOC_HI16,		R_LANAI_HI16},
+    {BFD_RELOC_HI16_S,		R_LANAI_HI16_S},
+    {BFD_RELOC_LANAI_21,	R_LANAI_21},
+    {BFD_RELOC_LANAI_21_F,	R_LANAI_21_F},
+    {BFD_RELOC_LANAI_25,	R_LANAI_25},
+    {BFD_RELOC_LANAI_PC25,	R_LANAI_PC25},
+    {BFD_RELOC_LANAI_25_S,	R_LANAI_25_S},
+    {BFD_RELOC_32,		R_LANAI_32},
+    {BFD_RELOC_CTOR,		R_LANAI_32},
 };
 
 static CONST struct reloc_howto_struct *
@@ -242,7 +242,7 @@ rtype2howto (cache_ptr, dst)
      arelent *cache_ptr;
      struct internal_reloc *dst;
 {
-  BFD_ASSERT (dst->r_type < (unsigned int) R_LANAI3_max);
+  BFD_ASSERT (dst->r_type < (unsigned int) R_LANAI_max);
   cache_ptr->howto = &coff_lanai_howto_table[dst->r_type];
 }
 
@@ -278,16 +278,20 @@ rtype2howto (cache_ptr, dst)
        dst->r_spare[1] = 0; \
      } while (0)
 
-/* Enable LANai3-specific hacks in coffcode.h. */
+/* Enable Lanai-specific hacks in coffcode.h. */
 
-#define COFF_LANAI3 1
+#define COFF_LANAI 1
+
+#ifndef bfd_pe_print_pdata
+#define bfd_pe_print_pdata	NULL
+#endif
 
 #include "coffcode.h"
 
 CREATE_BIG_COFF_TARGET_VEC (lanai_vec, "coff-lanai", D_PAGED, 0, '_', NULL, COFF_SWAP_TABLE);
 
 /********************************
- * LANai3 Custom Relocations
+ * Lanai Custom Relocations
  ********************************/
 
 /*
@@ -363,7 +367,7 @@ lanai_perform_reloc_21 (abfd, reloc_entry, symbol, data, input_section,
 #endif
 
   /* Is the address of the relocation really within the section?  */
-  if (reloc_entry->address > input_section->_cooked_size)
+  if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
     return bfd_reloc_outofrange;
 
   /* Work out which section the relocation is targetted at and the
@@ -767,7 +771,7 @@ lanai_perform_reloc_hi16_s (abfd, reloc_entry, symbol, data, input_section,
 #endif
 
   /* Is the address of the relocation really within the section?  */
-  if (reloc_entry->address > input_section->_cooked_size)
+  if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
     return bfd_reloc_outofrange;
 
   /* Work out which section the relocation is targetted at and the

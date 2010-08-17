@@ -1,6 +1,6 @@
 /*************************************************************************
  *                                                                       *
- * coff-lanai.reloc.h -- Relocation definitions for LANai3 coff format  *
+ * coff-lanai.reloc.h -- Relocation definitions for Lanai coff format  *
  *                                                                       *
  * Copyright (c) 1994, 1995 by Myricom, Inc.                             *
  * All rights reserved.                                                  *

@@ -1,6 +1,6 @@
 /*************************************************************************
  *                                                                       *
- * BFD support for the LANai3 architecture.                              *
+ * BFD support for the Lanai architecture.                              *
  *                                                                       *
  * Copyright (c) 1994, 1995 by Myricom, Inc.                             *
  * All rights reserved.                                                  *

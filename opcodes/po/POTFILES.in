@@ -10,8 +10,6 @@ cgen-asm.c
 cgen-bitset.c
 cgen-dis.c
 cgen-opc.c
-cgen-ops.h
-cgen-types.h
 cr16-dis.c
 cr16-opc.c
 cris-dis.c
@@ -155,6 +153,8 @@ pj-dis.c
 pj-opc.c
 ppc-dis.c
 ppc-opc.c
+rx-decode.c
+rx-dis.c
 s390-dis.c
 s390-mkopc.c
 s390-opc.c
