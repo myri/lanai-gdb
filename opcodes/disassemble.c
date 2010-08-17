@@ -233,9 +233,9 @@ disassembler (abfd)
       disassemble = print_insn_lm32;
       break;
 #endif
-#ifdef ARCH_lanai3
-    case bfd_arch_lanai3:
-      disassemble = print_insn_lanai3;
+#ifdef ARCH_lanai
+    case bfd_arch_lanai:
+      disassemble = print_insn_lanai;
       break;
 #endif
 #ifdef ARCH_m32r

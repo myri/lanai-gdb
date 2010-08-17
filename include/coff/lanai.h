@@ -1,6 +1,6 @@
 /*************************************************************************
  *                                                                       *
- * lanai3.h: coff information for LANai3. 				 *
+ * lanai.h: coff information for LANai3. 				 *
  *                                                                       *
  * Copyright (c) 1994, 1995 by Myricom, Inc.                             *
  * All rights reserved.                                                  *

@@ -248,7 +248,7 @@ iq2000-*-*)
 	;;
 
 lanai-*-*)
-	gdb_target_obs="lanai3-tdep.o"
+	gdb_target_obs="lanai-tdep.o"
 	;;
 
 lm32-*-*)		

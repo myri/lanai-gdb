@@ -60,15 +60,15 @@
 #include "sysdep.h"
 #include "libbfd.h"
 
-const bfd_arch_info_type bfd_lanai3_arch = 
+const bfd_arch_info_type bfd_lanai_arch = 
   {
     32,	/* 32 bits in a word */
     32,	/* 32 bits in an address */
     8,	/* 8 bits in a byte */
-    bfd_arch_lanai3,
+    bfd_arch_lanai,
     0,	/* only 1 machine */
-    "lanai3",
-    "lanai3",
+    "lanai",
+    "lanai",
     3,
     TRUE, /* the one and only */
     bfd_default_compatible, 

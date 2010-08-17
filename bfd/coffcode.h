@@ -2079,7 +2079,7 @@ coff_set_arch_mach_hook (bfd *abfd, void * filehdr)
       break;
 #endif
 #ifdef LANAI3MAGIC
-    case bfd_arch_lanai3:
+    case bfd_arch_lanai:
       *magicp = LANAI3MAGIC;
       return TRUE;
       break;

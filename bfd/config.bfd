@@ -757,7 +757,7 @@ case "${targ}" in
     ;;
 
   lanai*-*-*)
-    targ_defvec=lanai3_vec
+    targ_defvec=lanai_vec
     targ_underscore=yes
     ;;
 
