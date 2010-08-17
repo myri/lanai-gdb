@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: bug-binutils@gnu.org\n"
-"POT-Creation-Date: 2010-08-16 21:09-0700\n"
+"POT-Creation-Date: 2010-08-16 22:43-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -367,7 +367,7 @@ msgstr ""
 msgid "Relocation `%s' not yet implemented\n"
 msgstr ""
 
-#: coff-i860.c:605 coff-tic54x.c:398 coffcode.h:5162
+#: coff-i860.c:605 coff-tic54x.c:398 coffcode.h:5161
 msgid "%B: warning: illegal symbol index %ld in relocs"
 msgstr ""
 
@@ -453,44 +453,44 @@ msgstr ""
 msgid "%B (%s): Section flag %s (0x%x) ignored"
 msgstr ""
 
-#: coffcode.h:2390
+#: coffcode.h:2389
 #, c-format
 msgid "Unrecognized TI COFF target id '0x%x'"
 msgstr ""
 
-#: coffcode.h:2704
+#: coffcode.h:2703
 msgid "%B: reloc against a non-existant symbol index: %ld"
 msgstr ""
 
-#: coffcode.h:3273
+#: coffcode.h:3272
 msgid "%B: too many sections (%d)"
 msgstr ""
 
-#: coffcode.h:3683
+#: coffcode.h:3682
 msgid "%B: section %s: string table overflow at offset %ld"
 msgstr ""
 
-#: coffcode.h:4496
+#: coffcode.h:4495
 msgid "%B: warning: line number table read failed"
 msgstr ""
 
-#: coffcode.h:4526
+#: coffcode.h:4525
 msgid "%B: warning: illegal symbol index %ld in line numbers"
 msgstr ""
 
-#: coffcode.h:4540
+#: coffcode.h:4539
 msgid "%B: warning: duplicate line number information for `%s'"
 msgstr ""
 
-#: coffcode.h:4931
+#: coffcode.h:4930
 msgid "%B: Unrecognized storage class %d for %s symbol `%s'"
 msgstr ""
 
-#: coffcode.h:5057
+#: coffcode.h:5056
 msgid "warning: %B: local symbol `%s' has no section"
 msgstr ""
 
-#: coffcode.h:5200
+#: coffcode.h:5199
 msgid "%B: illegal relocation type %d at address 0x%lx"
 msgstr ""
 

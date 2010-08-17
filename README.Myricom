@@ -1,0 +1,10 @@
+To make the latest gdb with Lanai support:
+	git clone -b lanai ~glenn/git/gdb.git
+	cd gdb
+	./configure --enable-targets=all --prefix=/where/you/want/it
+	make
+	make install
+Then you can open lanai firmware executables:
+	/where/you/want/it/bin/gdb
+	(gdb) file /ufs/glenn/chips_svn/Lanai_Q/Chip/_simulation/mcp
+	Reading symbols from /ufs/glenn/chips_svn/Lanai_Q/Chip/_simulation/mcp...done.

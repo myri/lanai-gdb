@@ -215,7 +215,7 @@ Literals:([])*+- ,
 #define L3_RI_OPCODE_MASK   (0x80000000)
 #define L3_RI_MASK          (0xf0030000)
 #define L3_RR               (0xc0000000)
-//#define L3_RR_OPCODE_MASK   (0xf0000003)
+#define L3_RR_OPCODE_MASK   (0xf0000003)
 #define L3_RR_MASK          (0xf00207fb)
 #define L3_LEADZ            (0xc0000002)
 #define L3_LEADZ_OPCODE_MASK (0xf0000003)
