@@ -27,4 +27,28 @@ struct gdbarch_tdep
 				 will appear.  */
 };
 
-#endif /* arm-tdep.h */
+
+/* Register numbers of various important registers.  */
+
+
+/* Register numbers of various important registers.
+   Note that some of these values are "real" register numbers,
+   and correspond to the general registers of the machine,
+   and some are "phony" register numbers which are too large
+   to be actual register numbers as far as the user is concerned
+   but do serve to get the desired values when passed to read_register.  */
+
+enum lanai_regnum
+{
+  LANAI_R0_REGNUM = 0,  /* general register 0 (always == 0)        */
+  LANAI_PC_REGNUM = 2,	/* program counter                         */
+  LANAI_PS_REGNUM = 3,	/* processor status                        */
+  LANAI_SP_REGNUM = 4,	/* address of top of stack/bottom of frame */
+  LANAI_FP_REGNUM = 5,	/* address of executing stack frame        */
+  LANAI_RCA_REGNUM = 15,	/* return continuation address             */
+  LANAI_LAST_REGNUM = 31  /* last general register                   */
+};
+
+  
+
+#endif /* lanai-tdep.h */

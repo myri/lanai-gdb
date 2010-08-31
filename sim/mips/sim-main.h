@@ -37,7 +37,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 mips_core_signal ((SD), (CPU), (CIA), (MAP), (NR_BYTES), (ADDR), (TRANSFER), (ERROR))
 
 #include "sim-basics.h"
-
 typedef address_word sim_cia;
 
 #include "sim-base.h"

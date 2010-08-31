@@ -61,6 +61,12 @@ lanai_register_name (struct gdbarch *a, int regno)
 }
 
 static CORE_ADDR
+lanai_unwind_pc (struct gdbarch *gdbarch, struct frame_info *this_frame)
+{
+  return frame_unwind_register_unsigned (this_frame, LANAI_PC_REGNUM);
+}
+
+static CORE_ADDR
 lanai_skip_prologue (struct gdbarch *a, CORE_ADDR pc)
 {
   return pc+8;
@@ -73,6 +79,17 @@ lanai_breakpoint_from_pc (struct gdbarch *gdbarch,
 {
   *lenptr = 0;
   return 0;			/* ??? */
+}
+
+
+/* Return the GDB type object for the "standard" data type of data in
+   register N.  */
+
+static struct type *
+lanai_register_type (struct gdbarch *gdbarch, int regnum)
+{ 
+
+    return builtin_type (gdbarch)->builtin_uint32;
 }
 
 
@@ -92,11 +109,14 @@ lanai_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   tdep = xcalloc (1, sizeof (struct gdbarch_tdep));
   gdbarch = gdbarch_alloc (&info, tdep);
   set_gdbarch_num_regs (gdbarch, 32);
+  set_gdbarch_register_type (gdbarch, lanai_register_type);
   set_gdbarch_register_name (gdbarch, lanai_register_name);
   set_gdbarch_skip_prologue (gdbarch, lanai_skip_prologue);
   set_gdbarch_inner_than (gdbarch, core_addr_lessthan);
   set_gdbarch_breakpoint_from_pc (gdbarch, lanai_breakpoint_from_pc);
   set_gdbarch_print_insn (gdbarch, print_insn_lanai);
+  set_gdbarch_unwind_pc (gdbarch, lanai_unwind_pc);
+  
   return gdbarch;
 }
 
