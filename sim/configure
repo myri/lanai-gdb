@@ -634,7 +634,6 @@ LDFLAGS
 LIBS
 CPPFLAGS'
 ac_subdirs_all='arm
-lanai
 avr
 cr16
 cris
@@ -642,6 +641,7 @@ d10v
 frv
 h8300
 iq2000
+lanai
 lm32
 m32c
 m32r
@@ -3624,10 +3624,6 @@ subdirs="$subdirs arm"
 
 	   testsuite=yes
 	   ;;
-       lanai*)
-           subdirs="$subdirs lanai"
-
-	   ;;
        avr*-*-*)
            subdirs="$subdirs avr"
 
@@ -3661,6 +3657,10 @@ subdirs="$subdirs arm"
 
 	   testsuite=yes
 	   ;;
+       lanai-*-*)
+           subdirs="$subdirs lanai"
+
+           ;;
        lm32-*-*)
            subdirs="$subdirs lm32"
 

@@ -1,15 +1,11 @@
 ## COMMON_PRE_CONFIG_FRAG
 
-SIM_EXTRA_CFLAGS =
-
-SIM_OBJS = gdb.o insist.o
+SIM_OBJS = gdb.o sim-load.o
+SIM_RUN_OBJS = run.o $(SIM_OBJS)
 
 NL_TARGET = -DNL_TARGET_lanai
 
 ## COMMON_POST_CONFIG_FRAG
 
-
 %.o : $(srcdir)/%.c 
-	$(CXX) -c $< -g -o $@  $(ALL_CFLAGS)
-
-
+	$(CC) -c $< -g -o $@  $(ALL_CFLAGS)

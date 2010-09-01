@@ -1,19 +1,15 @@
-
-
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <bfd.h>
-#include <signal.h>  
+#include <signal.h>
 #include "gdb/callback.h"
 #include "gdb/remote-sim.h"
 #include "ansidecl.h"
 #include "sim-utils.h"
 #include "run-sim.h"
 #include "gdb/signals.h"
-
-bfd *sim_load_file (SIM_DESC sd, const char *myname, host_callback *callback, char *prog, bfd *prog_bfd, int verbose_p, int lma_p, sim_write_fn do_write); 
-
+#include "../common/sim-utils.h"
 
 static SIM_OPEN_KIND sim_kind;
 static char *myname;
@@ -135,8 +131,6 @@ int sim_trace PARAMS ((SIM_DESC sd))
   return 0;
 }
 void
-sim_info (sd, verbose)
-     SIM_DESC sd ATTRIBUTE_UNUSED;
-     int verbose ATTRIBUTE_UNUSED;
+sim_info PARAMS ((SIM_DESC sd ATTRIBUTE_UNUSED, int verbose ATTRIBUTE_UNUSED))
 {
 }
