@@ -3,6 +3,10 @@
 #include <string.h>
 #include <bfd.h>
 #include <signal.h>
+
+extern "C"
+{
+  
 #include "gdb/callback.h"
 #include "gdb/remote-sim.h"
 #include "ansidecl.h"
@@ -10,17 +14,22 @@
 #include "run-sim.h"
 #include "gdb/signals.h"
 #include "../common/sim-utils.h"
+}
+
+#include "gs_client.h"
 
 static SIM_OPEN_KIND sim_kind;
 static char *myname;
 host_callback *sim_callback;
 
+gs_client_t client;
+
 SIM_DESC sim_open PARAMS ((SIM_OPEN_KIND kind, struct host_callback_struct *callback, struct bfd *abfd, char **argv))
 {
   sim_callback = callback;
-  myname = argv [0];
-  
-  sim_callback->printf_filtered (sim_callback, "sim_open fuck\n");
+  myname = argv [0];  
+
+  sim_callback->printf_filtered (sim_callback, "sim_open %s\n", argv[0]);
   //  set_prompt ("(lanai) ");
 
   /*don't play the bullshit common simulators game*/
