@@ -663,6 +663,7 @@ sim_bitsize
 sim_assert
 sim_alignment
 sim_environment
+LANAIQDIR
 target_alias
 host_alias
 build_alias
@@ -704,6 +705,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+with_lanaiqdir
 with_zlib
 enable_maintainer_mode
 enable_sim_bswap
@@ -1357,6 +1359,7 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-lanaiqdir        where to find LanaiQ sources
   --with-zlib             include zlib support (auto/yes/no) default=auto
   --with-pkgversion=PKG   Use PKG in the version string in place of "GDB"
   --with-bugurl=URL       Direct users to URL to report a bug
@@ -2150,6 +2153,15 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 ac_config_headers="$ac_config_headers config.h:config.in"
+
+
+
+# Check whether --with-lanaiqdir was given.
+if test "${with_lanaiqdir+set}" = set; then :
+  withval=$with_lanaiqdir;
+fi
+
+LANAIQDIR=$with_lanaiqdir
 
 
 # This file contains common code used by all simulators.
