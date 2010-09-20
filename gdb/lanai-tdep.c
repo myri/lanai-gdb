@@ -48,7 +48,7 @@
 #include "lanai-tdep.h"
 
 static const char *reg_name[] = {
-  "r0", "r1", "pc", "psw", "r4", "r5", "r6", "r7", "rv", "r9",
+  "r0", "r1", "pc", "ps", "sp", "fp", "r6", "ra", "rv", "r9",
   "r10","r11","r12","r13","r14","rca","r16","r17","r18","r19",
   "r20","r21","r22","r23","r24","r25","r26","r27","r28","r29",
   "r30","r31"
@@ -58,6 +58,13 @@ static const char *
 lanai_register_name (struct gdbarch *a, int regno)
 {
   return (unsigned int)regno<32 ? reg_name[regno] : 0;
+}
+
+
+static CORE_ADDR
+lanai_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
+{
+  return frame_unwind_register_unsigned (next_frame, LANAI_SP_REGNUM);
 }
 
 static CORE_ADDR
@@ -72,13 +79,15 @@ lanai_skip_prologue (struct gdbarch *a, CORE_ADDR pc)
   return pc+8;
 }
 
+static unsigned char lanai_breakpoint [] = {0xff, 0xff, 0xff, 0xff};
+
 static const unsigned char *
 lanai_breakpoint_from_pc (struct gdbarch *gdbarch,
 			  CORE_ADDR *pcptr,
 			  int *lenptr)
 {
-  *lenptr = 0;
-  return 0;			/* ??? */
+  *lenptr = sizeof (lanai_breakpoint);
+  return lanai_breakpoint;
 }
 
 
@@ -87,10 +96,87 @@ lanai_breakpoint_from_pc (struct gdbarch *gdbarch,
 
 static struct type *
 lanai_register_type (struct gdbarch *gdbarch, int regnum)
-{ 
-
-    return builtin_type (gdbarch)->builtin_uint32;
+{
+  return builtin_type (gdbarch)->builtin_uint32;
 }
+
+struct lanai_frame_cache
+{
+  CORE_ADDR base;
+  CORE_ADDR pc;
+  int size;
+  struct trad_frame_saved_reg *saved_regs;
+};
+
+
+static struct lanai_frame_cache *
+lanai_frame_cache (struct frame_info *this_frame, void **this_cache)
+{
+  struct lanai_frame_cache *cache;
+
+  if ((*this_cache))
+    return (*this_cache);
+
+  cache = FRAME_OBSTACK_ZALLOC (struct lanai_frame_cache);
+  (*this_cache) = cache;
+  cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
+
+  cache->pc = get_frame_func (this_frame);
+  cache->base = get_frame_register_unsigned (this_frame, LANAI_FP_REGNUM);
+
+  return cache;
+}
+
+
+static struct value *lanai_frame_prev_register (struct frame_info *this_frame,
+						void **this_cache, int regnum)
+{
+  return frame_unwind_got_optimized (this_frame, regnum);
+}
+
+
+
+static void
+lanai_frame_this_id (struct frame_info *this_frame, void **this_cache,
+		    struct frame_id *this_id)
+{
+  struct lanai_frame_cache *cache = lanai_frame_cache (this_frame, this_cache);
+
+  /* This marks the outermost frame.  */
+  if (cache->base == 0)
+    return;
+
+  (*this_id) = frame_id_build (cache->base, cache->pc);
+}
+
+static CORE_ADDR
+lanai_frame_base_address (struct frame_info *this_frame, void **this_cache)
+{
+  struct lanai_frame_cache *cache =
+    lanai_frame_cache (this_frame, this_cache);
+
+  return cache->base;
+}
+
+
+static const struct frame_unwind lanai_frame_unwind =
+{
+  NORMAL_FRAME,
+  lanai_frame_this_id,
+  lanai_frame_prev_register,
+  NULL,
+  default_frame_sniffer
+};
+
+
+static const struct frame_base lanai_frame_base = 
+{
+  &lanai_frame_unwind,
+  lanai_frame_base_address,
+  lanai_frame_base_address,
+  lanai_frame_base_address
+};
+
 
 
 /* Initialize the current architecture based on INFO.  If possible,
@@ -116,6 +202,12 @@ lanai_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_breakpoint_from_pc (gdbarch, lanai_breakpoint_from_pc);
   set_gdbarch_print_insn (gdbarch, print_insn_lanai);
   set_gdbarch_unwind_pc (gdbarch, lanai_unwind_pc);
+  set_gdbarch_unwind_sp (gdbarch, lanai_unwind_sp);
+  set_gdbarch_pc_regnum (gdbarch, LANAI_PC_REGNUM);
+  set_gdbarch_sp_regnum (gdbarch, LANAI_SP_REGNUM);
+
+  frame_base_set_default (gdbarch, &lanai_frame_base);
+  frame_unwind_append_unwinder (gdbarch, &lanai_frame_unwind);
   
   return gdbarch;
 }

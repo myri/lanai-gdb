@@ -1,6 +1,6 @@
 ## COMMON_PRE_CONFIG_FRAG
 
-SIM_OBJS = gdb.o sim-load.o gs_client.o insist.o
+SIM_OBJS = gdb.o sim-load.o gs_client.o insist.o sm_literate.o
 SIM_RUN_OBJS = run.o
 
 NL_TARGET = -DNL_TARGET_lanai

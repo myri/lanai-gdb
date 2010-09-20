@@ -858,7 +858,7 @@ static void
 ppc_linux_sigtramp_cache (struct frame_info *this_frame,
 			  struct trad_frame_cache *this_cache,
 			  CORE_ADDR func, LONGEST offset,
-			  int bias)
+			  int bias)g
 {
   CORE_ADDR base;
   CORE_ADDR regs;
