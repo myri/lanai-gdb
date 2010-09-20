@@ -13,4 +13,4 @@ NL_TARGET = -DNL_TARGET_lanai
 ## COMMON_POST_CONFIG_FRAG
 
 %.o : $(srcdir)/%.c 
-	$(CXX) -I/nfs/home/finucane/gdb_server -c $< -g -o $@  $(ALL_CFLAGS) -I$(LANAIQDIR)
+	$(CXX)  -c $< -g -o $@  $(ALL_CFLAGS) -I$(LANAIQDIR)/gdb_server

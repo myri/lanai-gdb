@@ -265,7 +265,6 @@ int sim_stop PARAMS ((SIM_DESC sd))
     sim_callback->printf_filtered (sim_callback, "sim_stop\n");
     reason = SIGINT;
     client._break ();
-    sim_callback->printf_filtered (sim_callback, "sim_stop acked\n");
     return 1;
   }
   catch (exception_t&e)
@@ -280,7 +279,7 @@ void sim_stop_reason PARAMS ((SIM_DESC sd, enum sim_stop *r, int *sigrc))
 {
   sim_callback->printf_filtered (sim_callback, "sim_stop_reason\n");
   *r = sim_stopped;
-  *sigrc = reason == SIGTRAP ? TARGET_SIGNAL_TRAP : TARGET_SIGNAL_BUS;
+  *sigrc = reason == SIGSEGV ? TARGET_SIGNAL_BUS : TARGET_SIGNAL_TRAP;
 }
 
 /*bunch of hooks we don't care about*/
