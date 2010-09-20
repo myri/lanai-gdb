@@ -1,0 +1,1 @@
+../common/tconfig.in
