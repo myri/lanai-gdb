@@ -55,7 +55,7 @@ void sim_close PARAMS ((SIM_DESC sd, int quitting))
 {
   try
   {  
-    sim_callback->printf_filtered (sim_callback, "sim_close\n");
+    //sim_callback->printf_filtered (sim_callback, "sim_close\n");
   }
   catch (exception_t&e)
   {
@@ -69,7 +69,7 @@ SIM_RC sim_load PARAMS ((SIM_DESC sd, char *prog, struct bfd *abfd, int from_tty
 {
   try
   {
-    sim_callback->printf_filtered (sim_callback, "sim_load\n");
+    //sim_callback->printf_filtered (sim_callback, "sim_load\n");
 
     /*keep track of the bfd for segfault stuff*/
 
@@ -90,7 +90,7 @@ SIM_RC sim_create_inferior PARAMS ((SIM_DESC sd, struct bfd *abfd, char **argv, 
 {
   try
   {
-    sim_callback->printf_filtered (sim_callback, "sim_create_inferior\n");
+    //sim_callback->printf_filtered (sim_callback, "sim_create_inferior\n");
     return SIM_RC_OK;
   }
   catch (exception_t&e)
@@ -105,7 +105,7 @@ int sim_read PARAMS ((SIM_DESC sd, SIM_ADDR mem, unsigned char *buf, int length)
 {
   try
   {
-    sim_callback->printf_filtered (sim_callback, "sim_read address is %u, length is %d\n", mem, length);
+    //sim_callback->printf_filtered (sim_callback, "sim_read address is 0x%x, length is %d\n", mem, length);
     client.read_memory (mem, length, (char*)buf);
     return 1;
   }
@@ -121,7 +121,7 @@ int sim_write PARAMS ((SIM_DESC sd, SIM_ADDR mem, unsigned char *buf, int length
 {
   try
   { 
-    sim_callback->printf_filtered (sim_callback, "sim_write\n");
+    //sim_callback->printf_filtered (sim_callback, "sim_write\n");    
     client.write_memory (mem, length, (char*)buf);
     return 1;
   }
@@ -136,7 +136,7 @@ int sim_fetch_register PARAMS ((SIM_DESC sd, int regno, unsigned char *buf, int 
 {
   try
   {
-    sim_callback->printf_filtered (sim_callback, "sim_fetch_register\n");
+    //sim_callback->printf_filtered (sim_callback, "sim_fetch_register\n");
     unsigned n = client.fetch_register (regno);
     memcpy (buf, (char*)&n, sizeof (n));
 
@@ -153,7 +153,7 @@ int sim_store_register PARAMS ((SIM_DESC sd, int regno, unsigned char *buf, int 
 {
   try
   {
-    sim_callback->printf_filtered (sim_callback, "sim_store_register\n");   
+    //sim_callback->printf_filtered (sim_callback, "sim_store_register\n");   
     unsigned n;
     memcpy ((void*) &n, buf, sizeof (n));
     client.store_register (regno, n);
@@ -187,7 +187,7 @@ void sim_resume PARAMS ((SIM_DESC sd, int step, int siggnal))
   try
   {
    
-    sim_callback->printf_filtered (sim_callback, "sim_resume\n");
+    //sim_callback->printf_filtered (sim_callback, "sim_resume\n");
 
     //old_signal_handler = signal (SIGINT, signal_handler);
     reason = 0;  
@@ -262,7 +262,7 @@ int sim_stop PARAMS ((SIM_DESC sd))
 {
   try
   {
-    sim_callback->printf_filtered (sim_callback, "sim_stop\n");
+    //sim_callback->printf_filtered (sim_callback, "sim_stop\n");
     reason = SIGINT;
     client._break ();
     return 1;
@@ -277,7 +277,7 @@ int sim_stop PARAMS ((SIM_DESC sd))
 
 void sim_stop_reason PARAMS ((SIM_DESC sd, enum sim_stop *r, int *sigrc))
 {
-  sim_callback->printf_filtered (sim_callback, "sim_stop_reason\n");
+  //sim_callback->printf_filtered (sim_callback, "sim_stop_reason\n");
   *r = sim_stopped;
   *sigrc = reason == SIGSEGV ? TARGET_SIGNAL_BUS : TARGET_SIGNAL_TRAP;
 }
@@ -320,13 +320,15 @@ static int sim_cmd_lookup (char*s, int reverse=0);
 static void sim_cmd_help (char*s);
 static void sim_cmd_connect (char*s);
 static void sim_cmd_watch_pc (char*s);
+static void sim_cmd_detach (char*s);
 
 
 static sim_cmd_t sim_cmd_table [] =
   {
     {"help", "print list of simulator commands.", "", sim_cmd_help},
     {"connect", "connect to verilog.", "type \"sim connect <hostname> <port> [<cpu> [num_cpus]]\"", sim_cmd_connect},
-    {"watch_pc", "segfault if pc is ever outside of code sections", "type \"sim watch_pc\"", sim_cmd_watch_pc}
+    {"watch_pc", "segfault if pc is ever outside of code sections", "type \"sim watch_pc\"", sim_cmd_watch_pc},
+    {"detach", "detach verilog simulation", "type \"sim release\"", sim_cmd_detach}
   };
 #define NUM_CMDS (int) (sizeof (sim_cmd_table) / sizeof (sim_cmd_table [0]))
 
@@ -412,7 +414,12 @@ static void sim_cmd_connect (char*s)
     try
     {
       insist (num_cpus > 0 && num_cpus <= 2);
-      client.connect (host, port, cpu, num_cpus);
+      if (!client.connect (host, port, cpu, num_cpus))
+      {
+	sim_callback->printf_filtered (sim_callback, "couldn't connect to %s:%d.\n", host, port);
+	return;
+      }
+      
       sim_callback->printf_filtered (sim_callback, "Connected to gdb_server.\n");
     }
     catch (exception_t&e)
@@ -445,6 +452,20 @@ static void sim_cmd_watch_pc (char*s)
       if (sec->flags & SEC_CODE)
 	client.code ((unsigned) sec->vma, (unsigned) sec->size);
     }
+  }
+  catch (exception_t&e)
+  {
+    e.print ();
+    return;
+  }
+}
+
+static void sim_cmd_detach (char*s)
+{
+  try
+  {
+    client.detach ();
+    sim_callback->printf_filtered (sim_callback, "detached from verilog\n");
   }
   catch (exception_t&e)
   {

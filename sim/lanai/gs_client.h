@@ -24,6 +24,7 @@ class gs_client_t : public sm_literate_t
   void read_memory (unsigned address, unsigned length, char*buffer);
   void write_memory (unsigned address, unsigned length, char*buffer);
   void _break ();
+  void detach ();
   void code (unsigned address, unsigned length);
   void resume (int step);
   int wait ();  

@@ -35,11 +35,11 @@ int gs_client_t::connect (char*hostname, int port, int cpu, int num_cpus)
   if ((he = gethostbyname (hostname)))
     memcpy ((char*)&sin.sin_addr.s_addr, he->h_addr, he->h_length);
   else if ((sin.sin_addr.s_addr = inet_addr (hostname)) == (unsigned) -1)
-    return -1;
+    return 0;
   
   if ((fd = socket (PF_INET, SOCK_STREAM, 0)) < 0)
   {
-    return -1;
+    return 0;
   }  
   
   int option = 1;  
@@ -48,7 +48,7 @@ int gs_client_t::connect (char*hostname, int port, int cpu, int num_cpus)
   if (::connect (fd, (struct sockaddr*) &sin, sizeof (sin)) < 0)
   {
     close (fd);
-    return -1;
+    return 0;
   }
 
   /*make the greeting packet*/
@@ -267,8 +267,13 @@ void gs_client_t::write_memory (unsigned address, unsigned length, char*buffer)
 
 void gs_client_t::_break ()
 {
-  printf ("_break\n");
+  //printf ("_break\n");
   send_and_wait (GS_BREAK);
+}
+
+void gs_client_t::detach ()
+{
+  send_and_wait (GS_DETACH);
 }
 
 void gs_client_t::resume (int step)

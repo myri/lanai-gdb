@@ -30,7 +30,6 @@ int sm_literate_t::write (int fd, char*buffer, int length)
   {
     if ((n = ::write (fd, buffer + total, length - total)) < 1)
       return 0;
-    //insist (n == total);
   }
   return total;
 }
