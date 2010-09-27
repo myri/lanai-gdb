@@ -45,7 +45,10 @@ export GDB_SERVER_PORT=1991
 start the verilog simulator the usual way. see (LanaiQ/README and
 Lanai_Q/Chip/_simulation/_Note). do not source any *.do files. gdb will take
 care of setting the sram size and loading code. once vsim starts up and you get
-the prompt, tell verilog to run forever by giving it a large run number:
+the prompt, tell verilog to run "forever" by giving it a large run number. (if
+this cycle count runs out then verilog will stop and you have to type something
+like "run 10000000000" again. i don't know how to actually tell verilog to run
+forever.
 
 glenn% pwd
 glenn% /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation
@@ -62,7 +65,7 @@ Lanai_Init: key=17280 lanai_queue_id=16252948
 
 # Signal c0_model.clk found in current scope.
 # Creating new board instance "Chip.c0"
-VSIM 1> run 200000000000
+VSIM 1> run 2000000000
 # random seed is 1285306187, use PCIE_ROOT_SEED environment variable to reproduce this.
 # lz_command_reader_t::connect failed
 # Waiting to connect to one or more gdb proccess on port 1971...

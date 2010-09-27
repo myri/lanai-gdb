@@ -321,3 +321,33 @@ void gs_client_t::code (unsigned address, unsigned length)
 
   wait_for_ack ();
 }
+
+void gs_client_t::insert_breakpoint (unsigned address)
+{
+ insist (fd > 0);
+  
+  gs_header_t h;
+  h.type = GS_INSERT_BREAKPOINT;
+  h.address = address;
+  
+  gs_flip_header (h);
+  int r = write (fd, (char*)&h, sizeof (h));
+  insist (r);
+
+  wait_for_ack ();
+}
+
+void gs_client_t::remove_breakpoint (unsigned address)
+{
+ insist (fd > 0);
+  
+  gs_header_t h;
+  h.type = GS_REMOVE_BREAKPOINT;
+  h.address = address;
+  
+  gs_flip_header (h);
+  int r = write (fd, (char*)&h, sizeof (h));
+  insist (r);
+
+  wait_for_ack ();
+}

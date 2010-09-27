@@ -20,6 +20,8 @@ extern "C"
 #include "../gdb/lanai-tdep.h"
 
   void set_prompt (char *s);
+  int sim_insert_breakpoint (unsigned address);
+  int sim_remove_breakpoint (unsigned address);
 }
 
 #include "gs_client.h"
@@ -39,7 +41,7 @@ SIM_DESC sim_open PARAMS ((SIM_OPEN_KIND kind, struct host_callback_struct *call
     sim_callback = callback;
     myname = argv [0];  
 
-    set_prompt ("(lanai) ");
+    set_prompt ((char*)"(lanai) ");
 
     return (SIM_DESC) 1;
   }
@@ -472,5 +474,17 @@ static void sim_cmd_detach (char*s)
     e.print ();
     return;
   }
+}
+
+int sim_insert_breakpoint (unsigned address)
+{
+  client.insert_breakpoint (address);
+  return 1;
+}
+
+int sim_remove_breakpoint (unsigned address)
+{
+  client.remove_breakpoint (address);
+  return 1;
 }
 

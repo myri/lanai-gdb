@@ -178,13 +178,28 @@ static const struct frame_base lanai_frame_base =
 };
 
 
-
+/*these are provided by the simulator*/
+extern int sim_insert_breakpoint (unsigned address);
+extern int sim_remove_breakpoint (unsigned address);
+
+int lanai_memory_insert_breakpoint (struct gdbarch *gdbarch, struct bp_target_info *bp_tgt)
+{
+ return !sim_insert_breakpoint (bp_tgt->placed_address);
+}
+int lanai_memory_remove_breakpoint (struct gdbarch *gdbarch, struct bp_target_info *bp_tgt)
+{
+  return !sim_remove_breakpoint (bp_tgt->placed_address);
+}
+
+
 /* Initialize the current architecture based on INFO.  If possible,
    re-use an architecture from ARCHES, which is a list of
    architectures already created during this debugging session.
 
    Called e.g. at program startup, when reading a core file, and when
    reading a binary file.  */
+
+
 
 static struct gdbarch *
 lanai_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
@@ -206,6 +221,9 @@ lanai_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_pc_regnum (gdbarch, LANAI_PC_REGNUM);
   set_gdbarch_sp_regnum (gdbarch, LANAI_SP_REGNUM);
 
+  set_gdbarch_memory_remove_breakpoint (gdbarch, lanai_memory_remove_breakpoint);
+  set_gdbarch_memory_insert_breakpoint (gdbarch, lanai_memory_insert_breakpoint);
+  
   frame_base_set_default (gdbarch, &lanai_frame_base);
   frame_unwind_append_unwinder (gdbarch, &lanai_frame_unwind);
   
