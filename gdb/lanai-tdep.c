@@ -73,11 +73,43 @@ lanai_unwind_pc (struct gdbarch *gdbarch, struct frame_info *this_frame)
   return frame_unwind_register_unsigned (this_frame, LANAI_PC_REGNUM);
 }
 
+
+static ULONGEST
+lanai_read_integer (struct gdbarch*arch, CORE_ADDR addr)
+
+{
+  char buf[sizeof (ULONGEST)];
+
+  target_read_memory (addr, buf, 4);
+  return extract_unsigned_integer (buf, 4, gdbarch_byte_order (arch));
+}
+
 static CORE_ADDR
 lanai_skip_prologue (struct gdbarch *a, CORE_ADDR pc)
 {
-  return pc+8;
+  int insn;
+
+  /* Recognize the Lanai prologue:
+     st %fp,-4[*%sp]		!push old FP
+     add %sp,8,%fp		!generate new FP
+     sub %sp,<#>,%sp		!allocate stack space
+  */
+  
+  insn = lanai_read_integer (a, pc);
+  if (insn == 0x9293FFFC)
+  {
+    insn = lanai_read_integer (a, pc + 4);
+    if (insn == 0x02900008)
+    {
+      pc += 8;
+      insn = lanai_read_integer (a, pc);
+      if ((insn >> 16) == 0x2210)
+	return pc + 4;
+    }
+  }
+  return pc;
 }
+
 
 static unsigned char lanai_breakpoint [] = {0xff, 0xff, 0xff, 0xff};
 

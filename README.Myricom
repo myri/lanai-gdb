@@ -8,16 +8,15 @@ set breakpoints, etc.
 
 1. SOURCE CODE
 
-check out the source using git to a directory called gdb.git. only justin and
-glenn know the exact project name.
-
-also make sure you already have a chips_svn/LanaiQ tree checked out. the
+first make sure you already have a chips_svn/LanaiQ tree checked out. the
 --with-lanaiqdir configure option for configuring gdb.git tells
 gdb.git/lanai/sim/makefile where your "LanaiQ" project is checked out to -- it
 points to the LanaiQ directory. the makefile needs this for a header file, gs.h.
 
-2. BUILDING
+the gdb stuff is in a git repository.
 
+2. BUILDING
+git clone git://git.sw.myri.com/gdb.git
 cd gdb.git
 ./configure --target=lanai --enable-sim  --with-lanaiqdir=/path/to/your/chips_svn/Lanai_Q  --prefix=/where/you/want/it
    make
@@ -50,8 +49,8 @@ this cycle count runs out then verilog will stop and you have to type something
 like "run 10000000000" again. i don't know how to actually tell verilog to run
 forever.
 
-glenn% pwd
-glenn% /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation
+ankle% pwd
+ankle% /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation
 vsim.sv -c  Lanai_Q.Chip
 Reading /ufs/cad/mentor/modeltech/tcl/vsim/pref.tcl 
 Reading /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation/modelsim.tcl 
@@ -72,7 +71,10 @@ VSIM 1> run 2000000000
 # (Use the GDB_SERVER_PORT environment variable to set this.)
 
 
-now verilog is waiting and you can start gdb.
+now verilog is waiting and you can start gdb. in the "sim connect" command
+below, "ankle" is the name of the machine running the verilog simulation, and
+1971 is the default port for gdb_server running on that machine (as part of the
+verilog process).
 
 Current directory is /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation/bin.lanai/
 GNU gdb (GDB) 7.1
@@ -87,7 +89,7 @@ For bug reporting instructions, please see:
 Reading symbols from /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation/bin.lanai/mcp...done.
 (gdb) target sim
 Connected to the simulator.
-(lanai) sim connect glenn 1971
+(lanai) sim connect ankle 1971
 Connected to gdb_server.
 (lanai) load  /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation/bin.lanai/mcp
 [0x2cfc] is 0x92

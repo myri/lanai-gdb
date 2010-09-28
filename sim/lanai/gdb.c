@@ -186,6 +186,12 @@ static void signal_handler (int)
 
 void sim_resume PARAMS ((SIM_DESC sd, int step, int siggnal))
 {
+  if (!prog_bfd)
+  {
+    sim_callback->printf_filtered (sim_callback, "Use \"load\" to load a program first.\n");
+    return;
+  }
+
   try
   {
    
