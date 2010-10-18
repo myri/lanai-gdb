@@ -76,7 +76,6 @@ lanai_unwind_pc (struct gdbarch *gdbarch, struct frame_info *this_frame)
 
 static ULONGEST
 lanai_read_integer (struct gdbarch*arch, CORE_ADDR addr)
-
 {
   char buf[sizeof (ULONGEST)];
 
@@ -88,14 +87,15 @@ static CORE_ADDR
 lanai_skip_prologue (struct gdbarch *a, CORE_ADDR pc)
 {
   int insn;
-
+  
   /* Recognize the Lanai prologue:
      st %fp,-4[*%sp]		!push old FP
      add %sp,8,%fp		!generate new FP
      sub %sp,<#>,%sp		!allocate stack space
   */
-  
+
   insn = lanai_read_integer (a, pc);
+  
   if (insn == 0x9293FFFC)
   {
     insn = lanai_read_integer (a, pc + 4);
@@ -135,8 +135,9 @@ lanai_register_type (struct gdbarch *gdbarch, int regnum)
 struct lanai_frame_cache
 {
   CORE_ADDR base;
-  CORE_ADDR pc;
-  int size;
+  CORE_ADDR prev_pc;
+  CORE_ADDR prev_fp;
+  
   struct trad_frame_saved_reg *saved_regs;
 };
 
@@ -151,11 +152,17 @@ lanai_frame_cache (struct frame_info *this_frame, void **this_cache)
 
   cache = FRAME_OBSTACK_ZALLOC (struct lanai_frame_cache);
   (*this_cache) = cache;
-  cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
 
-  cache->pc = get_frame_func (this_frame);
+  cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
   cache->base = get_frame_register_unsigned (this_frame, LANAI_FP_REGNUM);
 
+  /*only try to read the previous frame regs if there is one*/
+  if (cache->base)
+  {
+    cache->prev_pc = get_frame_memory_unsigned (this_frame, cache->base - 4, 4);
+    cache->prev_fp = get_frame_memory_unsigned (this_frame, cache->base - 8, 4);
+  }
+  
   return cache;
 }
 
@@ -163,7 +170,17 @@ lanai_frame_cache (struct frame_info *this_frame, void **this_cache)
 static struct value *lanai_frame_prev_register (struct frame_info *this_frame,
 						void **this_cache, int regnum)
 {
-  return frame_unwind_got_optimized (this_frame, regnum);
+  static struct lanai_frame_cache*cache;
+
+  cache = lanai_frame_cache (this_frame, this_cache);
+  if (regnum == LANAI_FP_REGNUM)
+    return frame_unwind_got_constant (this_frame, regnum, cache->prev_fp);
+  if (regnum == LANAI_PC_REGNUM)
+    return frame_unwind_got_constant (this_frame, regnum, cache->prev_pc);
+  if (regnum == LANAI_SP_REGNUM)
+    return frame_unwind_got_constant (this_frame, regnum, cache->base);
+  
+  return trad_frame_get_prev_register (this_frame, cache->saved_regs, regnum);
 }
 
 
@@ -178,7 +195,7 @@ lanai_frame_this_id (struct frame_info *this_frame, void **this_cache,
   if (cache->base == 0)
     return;
 
-  (*this_id) = frame_id_build (cache->base, cache->pc);
+  (*this_id) = frame_id_build (cache->base, get_frame_func (this_frame));
 }
 
 static CORE_ADDR

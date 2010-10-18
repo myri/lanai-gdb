@@ -13,6 +13,11 @@ first make sure you already have a chips_svn/LanaiQ tree checked out. the
 gdb.git/lanai/sim/makefile where your "LanaiQ" project is checked out to -- it
 points to the LanaiQ directory. the makefile needs this for a header file, gs.h.
 
+also in order for the gdb stuff to be able read SM,
+
+'`define SM_PLI' in LanaiQ/SM/SM_Config.h must be uncommented out before you
+build the verilog stuff.
+
 the gdb stuff is in a git repository.
 
 2. BUILDING
@@ -31,7 +36,7 @@ gdb.git/gdb/gdb after you type make.
 set the ENABLE_GDB_SERVER environment variable (to anything).
 export ENABLE_GDB_SERVER=
 
-this tells the verilog simulator that you want to use gdb. (otherwise it ignored
+this tells the verilog simulator that you want to use gdb. (otherwise it ignores
 all the gdb stuff).
 
 by default gdb_server will accept gdb connections on port 1971. you can overrride

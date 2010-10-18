@@ -156,6 +156,7 @@ int sim_store_register PARAMS ((SIM_DESC sd, int regno, unsigned char *buf, int 
   try
   {
     //sim_callback->printf_filtered (sim_callback, "sim_store_register\n");   
+    insist (0);
     unsigned n;
     memcpy ((void*) &n, buf, sizeof (n));
     client.store_register (regno, n);
@@ -180,9 +181,51 @@ static int reason;
 
 static void signal_handler (int)
 {
-  printf ("signal_handler\n");
+  //printf ("signal_handler\n");
   reason = SIGINT;
 }
+
+
+static unsigned read_memory_int (unsigned addr)
+{
+  unsigned n;
+  client.read_memory (addr, sizeof (n), (char*)&n);
+  return htonl (n);
+}
+
+/*if pc is at the start of a function prologue, return the new pc that
+  is beyond the prologue. otherwise return an unchanged pc, which
+  means we aren't in a function prologue.  we have to do this every
+  time we single step so we end up skipping through function prologues
+  because if we let the user stop inside a function prologue, the
+  stack frame isn't set up yet and backtraces will look like garbage*/
+
+static unsigned skip_prologue (unsigned pc)
+{
+  int insn;
+  
+  /* Recognize the Lanai prologue:
+     st %fp,-4[*%sp]		!push old FP
+     add %sp,8,%fp		!generate new FP
+     sub %sp,<#>,%sp		!allocate stack space
+  */
+
+  insn = read_memory_int (pc);
+
+  if (insn == 0x9293FFFC)
+  {
+    insn = read_memory_int (pc + 4);
+    if (insn == 0x02900008)
+    {
+      pc += 8;
+      insn = read_memory_int (pc);
+      if ((insn >> 16) == 0x2210)
+	return pc + 4;
+    }
+  }
+  return pc;
+}
+
 
 void sim_resume PARAMS ((SIM_DESC sd, int step, int siggnal))
 {
@@ -195,7 +238,7 @@ void sim_resume PARAMS ((SIM_DESC sd, int step, int siggnal))
   try
   {
    
-    //sim_callback->printf_filtered (sim_callback, "sim_resume\n");
+    //sim_callback->printf_filtered (sim_callback, "sim_resume, step is %d, siggnal is %d\n", step, siggnal);
 
     //old_signal_handler = signal (SIGINT, signal_handler);
     reason = 0;  
@@ -204,9 +247,10 @@ void sim_resume PARAMS ((SIM_DESC sd, int step, int siggnal))
     /*remember the pc before we go, so we know if we have stepped past when we are stepping*/
 
     unsigned pc = client.fetch_register (LANAI_PC_REGNUM);
-
+    pc = htonl (pc);
+    
     /*now it is safe to let the lanai go again. the next message we get back from the lanai is going to be a break.*/
-    client.resume (step);
+    client.resume (step);    
 
     while (!reason)
     {
@@ -217,21 +261,28 @@ void sim_resume PARAMS ((SIM_DESC sd, int step, int siggnal))
 	  we'll get an unexpected BREAK message and assert. if this happens the answer is to ignore that BREAK.*/
 
 	int r = client.wait ();
+
 	if (r == 0)
 	{
 	  if (reason == 0) continue;
 	  if (reason == SIGINT) r = -1;
 	}
+	else if (r > 0)
+	  reason = (r == gs_client_t::BREAK ? SIGINT : SIGSEGV);
+
+	//sim_callback->printf_filtered (sim_callback, "reason is %d\n",  reason);
 	
 	insist (r > 0 || reason == SIGINT);
-
+	unsigned new_pc = htonl (client.fetch_register (LANAI_PC_REGNUM));
+	
 	/*if we were stepping, but we didn't change pc, keep going. we step at the cycle level*/
-	if (r > 0 && step && pc == client.fetch_register (LANAI_PC_REGNUM))
+	if ( r > 0 && step && pc == new_pc)
 	{
+	  //sim_callback->printf_filtered (sim_callback, "didn't change pc, resuming\n");
 	  reason = 0;
 	  client.resume (step);
 	  continue;
-	}	
+	}
 
 	if (r < 0)
 	{
@@ -246,6 +297,31 @@ void sim_resume PARAMS ((SIM_DESC sd, int step, int siggnal))
 	}
 	
 	reason = (r == gs_client_t::BREAK ? SIGTRAP : SIGSEGV);
+
+	
+	/*if we stopped in the start of a function prologue, silently skip past it*/
+	unsigned skipped_pc = skip_prologue (new_pc);
+	int skipped = 0;
+	while (skipped_pc != new_pc)
+	{
+	  skipped = 1;
+	  //sim_callback->printf_filtered (sim_callback, "skipped_pc is 0x%x, new_pc is 0x%x\n", skipped_pc, new_pc);
+	  client.resume (1);
+	  client.wait ();
+	  new_pc = htonl (client.fetch_register (LANAI_PC_REGNUM));
+	}
+
+	if (skipped)
+	{
+	  /*this is the biggest kludge ever. let the cpu do 1 more cycle.
+	    this is to let the cpu finish setting up the stack frame, seems to take 1 more cycle*/
+	  
+	  //	  client.resume (1);
+	  //	  client.wait ();
+	
+	  //	  insist (htonl (client.fetch_register (LANAI_PC_REGNUM) == new_pc));
+	}
+	
 	break;
       }
       catch (exception_t&e)
@@ -329,6 +405,7 @@ static void sim_cmd_help (char*s);
 static void sim_cmd_connect (char*s);
 static void sim_cmd_watch_pc (char*s);
 static void sim_cmd_detach (char*s);
+static void sim_cmd_cycle (char*s);
 
 
 static sim_cmd_t sim_cmd_table [] =
@@ -336,7 +413,8 @@ static sim_cmd_t sim_cmd_table [] =
     {"help", "print list of simulator commands.", "", sim_cmd_help},
     {"connect", "connect to verilog.", "type \"sim connect <hostname> <port> [<cpu> [num_cpus]]\"", sim_cmd_connect},
     {"watch_pc", "segfault if pc is ever outside of code sections", "type \"sim watch_pc\"", sim_cmd_watch_pc},
-    {"detach", "detach verilog simulation", "type \"sim release\"", sim_cmd_detach}
+    {"detach", "detach from verilog simulation", "type \"sim detach\"", sim_cmd_detach},
+    {"cycle", "cycle cpu 1 clock", "type \"sim cycle\"", sim_cmd_cycle}
   };
 #define NUM_CMDS (int) (sizeof (sim_cmd_table) / sizeof (sim_cmd_table [0]))
 
@@ -474,6 +552,20 @@ static void sim_cmd_detach (char*s)
   {
     client.detach ();
     sim_callback->printf_filtered (sim_callback, "detached from verilog\n");
+  }
+  catch (exception_t&e)
+  {
+    e.print ();
+    return;
+  }
+}
+
+static void sim_cmd_cycle (char*s)
+{
+  try
+  {
+    client.resume (1);
+    client.wait ();
   }
   catch (exception_t&e)
   {
