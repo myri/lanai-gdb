@@ -124,7 +124,10 @@ Program received signal SIGTRAP, Trace/breakpoint trap.
    - next single steps instead of stepping over functions.
    - finish does not stop where it should. it ends up being just like
      continue. don't use it.
-
+   - stopping at the very start of a function may give weird results when you do
+     bt or where. this is because it might take a cycle more for the stack frame
+     to be set up. if you see a total lie of a backtrace, try "sim cycle" to
+     give the simulator a chance to finish setting up the stack frame.
 
 
 
