@@ -129,7 +129,9 @@ Program received signal SIGTRAP, Trace/breakpoint trap.
      to be set up. if you see a total lie of a backtrace, try "sim cycle" to
      give the simulator a chance to finish setting up the stack frame.
    - register store is not implemented yet.
-
+   - support for the 2nd lanai is sort of in there but untested so it probably
+     won't work at all. when it does work, you end up attaching 1 gdb for each
+     lanai.
 
 ------------------------------------------------------------------------------------
 below this line are some notes specific to porting gdb to a lanai target that
