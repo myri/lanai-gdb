@@ -21,7 +21,7 @@ build the verilog stuff.
 the gdb stuff is in a git repository.
 
 2. BUILDING
-git clone git://git.sw.myri.com/gdb.git
+git clone git://git.sw.myri.com/gdb.git -b lanai gdb.git
 cd gdb.git
 ./configure --target=lanai --enable-sim  --with-lanaiqdir=/path/to/your/chips_svn/Lanai_Q  --prefix=/where/you/want/it
    make
