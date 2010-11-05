@@ -238,16 +238,18 @@ void sim_resume PARAMS ((SIM_DESC sd, int step, int siggnal))
   try
   {
    
-    //sim_callback->printf_filtered (sim_callback, "sim_resume, step is %d, siggnal is %d\n", step, siggnal);
+    //    sim_callback->printf_filtered (sim_callback, "sim_resume, step is %d, siggnal is %d\n", step, siggnal);
 
     //old_signal_handler = signal (SIGINT, signal_handler);
     reason = 0;  
-
+    
   
     /*remember the pc before we go, so we know if we have stepped past when we are stepping*/
 
     unsigned pc = client.fetch_register (LANAI_PC_REGNUM);
     pc = htonl (pc);
+    
+    //    sim_callback->printf_filtered (sim_callback, "sim_resume, pc is 0x%x\n", pc);
     
     /*now it is safe to let the lanai go again. the next message we get back from the lanai is going to be a break.*/
     client.resume (step);    
@@ -270,7 +272,7 @@ void sim_resume PARAMS ((SIM_DESC sd, int step, int siggnal))
 	else if (r > 0)
 	  reason = (r == gs_client_t::BREAK ? SIGINT : SIGSEGV);
 
-	//sim_callback->printf_filtered (sim_callback, "reason is %d\n",  reason);
+	//	sim_callback->printf_filtered (sim_callback, "reason is %d\n",  reason);
 	
 	insist (r > 0 || reason == SIGINT);
 	unsigned new_pc = htonl (client.fetch_register (LANAI_PC_REGNUM));
@@ -316,8 +318,8 @@ void sim_resume PARAMS ((SIM_DESC sd, int step, int siggnal))
 	  /*this is the biggest kludge ever. let the cpu do 1 more cycle.
 	    this is to let the cpu finish setting up the stack frame, seems to take 1 more cycle*/
 	  
-	  //	  client.resume (1);
-	  //	  client.wait ();
+	  client.resume (1);
+	  client.wait ();
 	
 	  //	  insist (htonl (client.fetch_register (LANAI_PC_REGNUM) == new_pc));
 	}
@@ -576,12 +578,14 @@ static void sim_cmd_cycle (char*s)
 
 int sim_insert_breakpoint (unsigned address)
 {
+  //  sim_callback->printf_filtered (sim_callback, "insert breakpoint 0x%x\n", address);
   client.insert_breakpoint (address);
   return 1;
 }
 
 int sim_remove_breakpoint (unsigned address)
 {
+  //  sim_callback->printf_filtered (sim_callback, "remove breakpoint 0x%x\n", address);
   client.remove_breakpoint (address);
   return 1;
 }

@@ -53,6 +53,10 @@
 #include "jit.h"
 #include "tracepoint.h"
 
+CORE_ADDR finucane_temp_breakpoint;
+
+extern int finucane_skip_subroutines;
+
 /* Prototypes for local functions */
 
 static void signals_info (char *, int);
@@ -2294,6 +2298,22 @@ wait_for_inferior (int treat_exec_as_sigtrap)
       /* No error, don't finish the state yet.  */
       discard_cleanups (old_chain);
 
+      /*finucane kludge*/
+      
+      {
+	CORE_ADDR pc;
+	pc = regcache_read_pc (get_current_regcache ());
+	if (pc == finucane_temp_breakpoint)
+	{
+	  finucane_temp_breakpoint = 0;
+	  ecs->wait_some_more = 0;
+	  ecs->event_thread->stop_signal = TARGET_SIGNAL_0;
+	  set_executing (ecs->ptid, 0);
+	  set_running (ecs->ptid, 0);
+	}
+      }
+      
+
       if (!ecs->wait_some_more)
 	break;
     }
@@ -4193,13 +4213,24 @@ infrun: not switching back to stepped thread, it has vanished\n");
      initial outermost frame, before sp was valid, would
      have code_addr == &_start.  See the comment in frame_id_eq
      for more.  */
-  if (!frame_id_eq (get_stack_frame_id (frame),
+  if (
+finucane_skip_subroutines &&
+(
+      step_start_function != find_pc_function (stop_pc) || /*finucane added this*/
+
+      (
+
+!frame_id_eq (get_stack_frame_id (frame),
 		    ecs->event_thread->step_stack_frame_id)
       && (frame_id_eq (frame_unwind_caller_id (get_current_frame ()),
 		       ecs->event_thread->step_stack_frame_id)
 	  && (!frame_id_eq (ecs->event_thread->step_stack_frame_id,
 			    outer_frame_id)
-	      || step_start_function != find_pc_function (stop_pc))))
+	      || step_start_function != find_pc_function (stop_pc)))
+)
+      )
+
+)
     {
       CORE_ADDR real_stop_pc;
 
@@ -4737,6 +4768,7 @@ handle_step_into_function_backward (struct gdbarch *gdbarch,
 /* Insert a "step-resume breakpoint" at SR_SAL with frame ID SR_ID.
    This is used to both functions and to skip over code.  */
 
+
 static void
 insert_step_resume_breakpoint_at_sal (struct gdbarch *gdbarch,
 				      struct symtab_and_line sr_sal,
@@ -4752,6 +4784,10 @@ insert_step_resume_breakpoint_at_sal (struct gdbarch *gdbarch,
 			"infrun: inserting step-resume breakpoint at %s\n",
 			paddress (gdbarch, sr_sal.pc));
 
+
+
+  if (finucane_skip_subroutines)
+    finucane_temp_breakpoint = sr_sal.pc;
   inferior_thread ()->step_resume_breakpoint
     = set_momentary_breakpoint (gdbarch, sr_sal, sr_id, bp_step_resume);
 }

@@ -907,9 +907,12 @@ Can't attach to process and specify a core file at the same time."));
   /* No exit -- exit is through quit_command.  */
 }
 
+extern CORE_ADDR finucane_temp_breakpoint;
 int
 gdb_main (struct captured_main_args *args)
 {
+  finucane_temp_breakpoint = 0;
+  
   use_windows = args->use_windows;
   catch_errors (captured_main, args, "", RETURN_MASK_ALL);
   /* The only way to end up here is by an error (normal exit is

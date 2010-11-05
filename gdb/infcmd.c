@@ -815,6 +815,8 @@ delete_longjmp_breakpoint_cleanup (void *arg)
   delete_longjmp_breakpoint (thread);
 }
 
+int finucane_skip_subroutines;
+
 static void
 step_1 (int skip_subroutines, int single_inst, char *count_string)
 {
@@ -824,6 +826,8 @@ step_1 (int skip_subroutines, int single_inst, char *count_string)
   int async_exec = 0;
   int thread = -1;
 
+  finucane_skip_subroutines = skip_subroutines;
+  
   ERROR_NO_INFERIOR;
   ensure_valid_thread ();
   ensure_not_running ();
@@ -1502,6 +1506,8 @@ finish_backward (struct symbol *function)
 
 /* finish_forward -- helper function for finish_command.  */
 
+extern CORE_ADDR finucane_temp_breakpoint;
+
 static void
 finish_forward (struct symbol *function, struct frame_info *frame)
 {
@@ -1515,6 +1521,10 @@ finish_forward (struct symbol *function, struct frame_info *frame)
   sal = find_pc_line (get_frame_pc (frame), 0);
   sal.pc = get_frame_pc (frame);
 
+  /*finucane added this*/
+  gdb_assert (finucane_temp_breakpoint == 0);
+  finucane_temp_breakpoint = sal.pc;
+  
   breakpoint = set_momentary_breakpoint (gdbarch, sal,
 					 get_stack_frame_id (frame),
                                          bp_finish);
