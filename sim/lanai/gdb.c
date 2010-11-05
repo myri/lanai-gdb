@@ -155,7 +155,9 @@ int sim_store_register PARAMS ((SIM_DESC sd, int regno, unsigned char *buf, int 
 {
   try
   {
-    //sim_callback->printf_filtered (sim_callback, "sim_store_register\n");   
+    sim_callback->printf_filtered (sim_callback, "writing registers is not yet supported\n");
+    return 0;
+
     insist (0);
     unsigned n;
     memcpy ((void*) &n, buf, sizeof (n));

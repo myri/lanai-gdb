@@ -1330,6 +1330,8 @@ print_return_value (struct type *func_type, struct type *value_type)
   struct ui_stream *stb;
   struct value *value;
 
+  return; //finucane no-opped this
+  
   CHECK_TYPEDEF (value_type);
   gdb_assert (TYPE_CODE (value_type) != TYPE_CODE_VOID);
 
@@ -1522,7 +1524,9 @@ finish_forward (struct symbol *function, struct frame_info *frame)
   sal.pc = get_frame_pc (frame);
 
   /*finucane added this*/
-  gdb_assert (finucane_temp_breakpoint == 0);
+  /*if we C-C while a function is being finished and then finish from where-ever we stopped
+    this will end up overriding the original finish. that sort of makes sense*/
+
   finucane_temp_breakpoint = sal.pc;
   
   breakpoint = set_momentary_breakpoint (gdbarch, sal,

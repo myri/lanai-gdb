@@ -249,6 +249,22 @@ int lanai_memory_remove_breakpoint (struct gdbarch *gdbarch, struct bp_target_in
    reading a binary file.  */
 
 
+/*no idea what this is for really, hopefully no one really uses it
+  but having it shuts up a gdb assertion*/
+
+static enum return_value_convention
+lanai_return_value (struct gdbarch *gdbarch, struct type *func_type,
+		    struct type *valtype, struct regcache *regcache,
+		    gdb_byte *readbuf, const gdb_byte *writebuf)
+{
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
+  printf_unfiltered (_("lanai_return_value stub called, do not trust whatever you just did if it involves funcation return values.\n"));
+  
+  return RETURN_VALUE_REGISTER_CONVENTION;
+} 
+
+
 
 static struct gdbarch *
 lanai_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
@@ -269,6 +285,8 @@ lanai_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_unwind_sp (gdbarch, lanai_unwind_sp);
   set_gdbarch_pc_regnum (gdbarch, LANAI_PC_REGNUM);
   set_gdbarch_sp_regnum (gdbarch, LANAI_SP_REGNUM);
+
+  set_gdbarch_return_value (gdbarch, lanai_return_value);
 
   set_gdbarch_memory_remove_breakpoint (gdbarch, lanai_memory_remove_breakpoint);
   set_gdbarch_memory_insert_breakpoint (gdbarch, lanai_memory_insert_breakpoint);
