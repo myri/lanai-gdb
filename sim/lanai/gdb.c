@@ -105,6 +105,12 @@ SIM_RC sim_create_inferior PARAMS ((SIM_DESC sd, struct bfd *abfd, char **argv, 
 
 int sim_read PARAMS ((SIM_DESC sd, SIM_ADDR mem, unsigned char *buf, int length))
 {
+  if (mem >= 4 * 1024 * 1024)
+  {
+    //sim_callback->printf_filtered (sim_callback, "reading this address not supported.\n");
+    return 0;
+  }
+  
   try
   {
     //sim_callback->printf_filtered (sim_callback, "sim_read address is 0x%x, length is %d\n", mem, length);
@@ -121,6 +127,12 @@ int sim_read PARAMS ((SIM_DESC sd, SIM_ADDR mem, unsigned char *buf, int length)
 
 int sim_write PARAMS ((SIM_DESC sd, SIM_ADDR mem, unsigned char *buf, int length))
 {
+  if (mem >= 4 * 1024 * 1024)
+  {
+    //sim_callback->printf_filtered (sim_callback, "writing this address not supported.\n");
+    return 0;
+  }
+
   try
   { 
     //sim_callback->printf_filtered (sim_callback, "sim_write\n");    

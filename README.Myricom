@@ -37,7 +37,25 @@ set the ENABLE_GDB_SERVER environment variable (to anything).
 export ENABLE_GDB_SERVER=
 
 this tells the verilog simulator that you want to use gdb. (otherwise it ignores
-all the gdb stuff).
+all the gdb stuff). if you forget to set this variable and try to follow the
+rest of the instructions on running gdb, verilog will crash like this:
+
+** Fatal: (SIGSEGV) Bad pointer access. Closing vsimk.
+** Fatal: vsimk is exiting with code 211.
+(Exit codes are defined in the ModelSim messages appendix
+of the ModelSim User's Manual.)
+message queue 327681 removed
+
+this is because you aren't doing the non gdb commands that set up the SRAM size
+etc.
+
+% more mcp.do
+
+lanai_sram_size 1M
+lanai_inst_log inst.log
+lanai_sram_log sram.log
+lanai_load bin.lanai/mcp
+
 
 by default gdb_server will accept gdb connections on port 1971. you can overrride
 this with the GDB_SERVER_PORT environment variable. for instance
