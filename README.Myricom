@@ -8,10 +8,19 @@ set breakpoints, etc.
 
 1. SOURCE CODE
 
-first make sure you already have a chips_svn/LanaiQ tree checked out. the
+first make sure you already have a chips_svn/LanaiQ tree checked out. 
+
+  [
+
+      svn co svn://adel/chips chips_svn
+
+  ]
+
+
+the
 --with-lanaiqdir configure option for configuring gdb.git tells
 gdb.git/lanai/sim/makefile where your "LanaiQ" project is checked out to -- it
-points to the LanaiQ directory. the makefile needs this for a header file, gs.h.
+points to the chips_svn/LanaiQ directory. the makefile needs this for a header file, gs.h.
 
 also in order for the gdb stuff to be able read SM,
 
@@ -62,10 +71,21 @@ this with the GDB_SERVER_PORT environment variable. for instance
 
 export GDB_SERVER_PORT=1991
 
-4. RUNNING GDB
+4. RUNNING VERILOG
 
-start the verilog simulator the usual way. see (LanaiQ/README and
-Lanai_Q/Chip/_simulation/_Note). do not source any *.do files. gdb will take
+start the verilog simulator the usual way. for building the verilog stuff,
+see (LanaiQ/README and Lanai_Q/Chip/_simulation/_Note). 
+
+[
+  but basically to build the verilog stuff
+
+  glenn% cd /nfs/home/finucane/chips_svn/Lanai_Q
+  glenn% contrib/chipenv make
+  glenn% cd /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation
+  glenn% ../../contrib/chipenv make
+]
+
+do not source any *.do files. gdb will take
 care of setting the sram size and loading code. once vsim starts up and you get
 the prompt, tell verilog to run "forever" by giving it a large run number. (if
 this cycle count runs out then verilog will stop and you have to type something
@@ -74,7 +94,7 @@ forever.
 
 ankle% pwd
 ankle% /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation
-vsim.sv -c  Lanai_Q.Chip
+vsim.sv -c  Lanai_Q.Chip_Test
 Reading /ufs/cad/mentor/modeltech/tcl/vsim/pref.tcl 
 Reading /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation/modelsim.tcl 
 Lanai_Init: key=17280 lanai_queue_id=16252948
@@ -86,15 +106,24 @@ Lanai_Init: key=17280 lanai_queue_id=16252948
 [...]
 
 # Signal c0_model.clk found in current scope.
-# Creating new board instance "Chip.c0"
-VSIM 1> run 2000000000
+
+# Creating new board instance "Chip_Test"
+VSIM 1> setenv WEN_VECTOR_CMD_FILE jtag_init.src
+# jtag_init.src
+VSIM 2> run 2000000000
 # random seed is 1285306187, use PCIE_ROOT_SEED environment variable to reproduce this.
 # lz_command_reader_t::connect failed
 # Waiting to connect to one or more gdb proccess on port 1971...
 # (Use the GDB_SERVER_PORT environment variable to set this.)
 
+5. RUNNING GDB
 
-now verilog is waiting and you can start gdb. in the "sim connect" command
+now verilog is waiting and you can start gdb.
+
+
+
+
+ in the "sim connect" command
 below, "ankle" is the name of the machine running the verilog simulation, and
 1971 is the default port for gdb_server running on that machine (as part of the
 verilog process).
@@ -112,10 +141,9 @@ For bug reporting instructions, please see:
 Reading symbols from /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation/bin.lanai/mcp...done.
 (gdb) target sim
 Connected to the simulator.
-(lanai) sim connect ankle 1971
+(lanai) sim connect glenn 1971
 Connected to gdb_server.
 (lanai) load  /nfs/home/finucane/chips_svn/Lanai_Q/Chip/_simulation/bin.lanai/mcp
-[0x2cfc] is 0x92
 (lanai) b main
 Breakpoint 1 at 0x2d08: file mcp.c, line 2537.
 (lanai) r
@@ -138,10 +166,7 @@ Program received signal SIGTRAP, Trace/breakpoint trap.
 
 
 
-5. WHAT IS STILL BROKEN. 
-   - next single steps instead of stepping over functions.
-   - finish does not stop where it should. it ends up being just like
-     continue. don't use it.
+6. WHAT IS STILL BROKEN. 
    - stopping at the very start of a function may give weird results when you do
      bt or where. this is because it might take a cycle more for the stack frame
      to be set up. if you see a total lie of a backtrace, try "sim cycle" to
