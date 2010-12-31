@@ -10,6 +10,58 @@
 #include "gs_client.h"
 #include "insist.h"
 
+/* Like read(), but retry instead of returning partial reads, and
+   perror on error. */
+
+static
+ssize_t
+_read (int fd, void *buf, size_t count)
+{
+  ssize_t red = 0;
+  while (count)
+    {
+      int r = read (fd, buf, count);
+      if (-1 == r)
+	{
+	  if (errno == EINTR || errno == EAGAIN)
+	    continue;
+	  perror ("my_read");
+	  return -1;
+	}
+      buf = (char *)buf + r;
+      count -= r;
+      red += r;
+    }
+  return red;
+}
+#define READ(f,b,c) insist (-1 != _read (f, b, c))
+
+/* Like write(), but retry instead of returning partial writes, and
+   perror on error. */
+
+static
+ssize_t
+_write (int fd, void *buf, size_t count)
+{
+  ssize_t red = 0;
+  while (count)
+    {
+      int r = write (fd, buf, count);
+      if (-1 == r)
+	{
+	  if (errno == EINTR || errno == EAGAIN)
+	    continue;
+	  perror ("my_write");
+	  return -1;
+	}
+      buf = (char *)buf + r;
+      count -= r;
+      red += r;
+    }
+  return red;
+}
+#define WRITE(f,b,c) insist (-1 != _write (f, b, c))
+
 gs_client_t::gs_client_t ()
 {
   fd = 0;  
@@ -33,7 +85,7 @@ int gs_client_t::connect (char*hostname, int port, int cpu, int num_cpus)
   sin.sin_port = htons (port);
 
   if ((he = gethostbyname (hostname)))
-    memcpy ((char*)&sin.sin_addr.s_addr, he->h_addr, he->h_length);
+    memcpy (&sin.sin_addr.s_addr, he->h_addr, he->h_length);
   else if ((sin.sin_addr.s_addr = inet_addr (hostname)) == (unsigned) -1)
     return 0;
   
@@ -58,8 +110,7 @@ int gs_client_t::connect (char*hostname, int port, int cpu, int num_cpus)
   h.cpu_num = cpu;
   gs_flip_header (h);
 
-  int r = write (fd, (char*)&h, sizeof (h));
-  insist (r);
+  WRITE (fd, &h, sizeof (h));
 
   /*wait for the ack*/
   wait_for_ack ();
@@ -96,8 +147,7 @@ int gs_client_t::wait ()
   /*we have something legit coming in. process it. it should only be a break (since we aren't modeling aborts)*/
 
   /*read the packet*/
-  r = read (fd, (char*)&h, sizeof (h));
-  insist (r);
+  READ (fd, &h, sizeof (h));
   gs_flip_header (h);
   
   insist (h.type == GS_BREAK || h.type == GS_SEGFAULT);
@@ -138,8 +188,7 @@ int gs_client_t::poll ()
   /*we have something legit coming in. process it. it should only be a break (since we aren't modeling aborts)*/
 
   /*read the packet*/
-  r = read (fd, (char*)&h, sizeof (h));
-  insist (r);
+  READ (fd, &h, sizeof (h));
   gs_flip_header (h);
   
   insist (h.type == GS_BREAK);
@@ -155,8 +204,7 @@ void gs_client_t::wait_for_ack ()
   gs_header_t h;
 
   /*read the packet*/
-  int r = read (fd, (char*)&h, sizeof (h));
-  insist (r);
+  READ (fd, &h, sizeof (h));
   gs_flip_header (h);
   
   /*save what we care from it*/
@@ -179,12 +227,10 @@ unsigned gs_client_t::fetch_register (int regno)
   gs_flip_header (h);
 
   /*send it*/
-  int r = write (fd, (char*)&h, sizeof (h));
-  insist (r);
+  WRITE (fd, &h, sizeof (h));
 
   /*get the answer*/
-  r = read (fd, (char*)&h, sizeof (h));
-  insist (r);
+  READ (fd, &h, sizeof (h));
   gs_flip_header (h);
   
   /*save what we care from it*/
@@ -210,8 +256,7 @@ void gs_client_t::store_register (int regno, unsigned value)
   gs_flip_header (h);
 
   /*send it*/
-  int r = write (fd, (char*)&h, sizeof (h));
-  insist (r);
+  WRITE (fd, &h, sizeof (h));
 
   wait_for_ack ();
 }
@@ -229,20 +274,17 @@ void gs_client_t::read_memory (unsigned address, unsigned length, char*buffer)
   gs_flip_header (h);
 
   /*send it*/
-  int r = write (fd, (char*)&h, sizeof (h));
-  insist (r);
+  WRITE (fd, &h, sizeof (h));
 
   /*get the header of the read response*/
-  r = read (fd, (char*)&h, sizeof (h));
-  insist (r);
+  READ (fd, &h, sizeof (h));
   gs_flip_header (h);
   
   //printf ("h.type is %d, h.length is %d\n", h.type, h.length);
   insist (h.type == GS_READ_MEMORY_ACK && h.length == length);
   
   /*now the data*/
-  r = read (fd, buffer, length);
-  insist (r);
+  READ (fd, buffer, length);
 }
 
 void gs_client_t::write_memory (unsigned address, unsigned length, char*buffer)
@@ -258,8 +300,8 @@ void gs_client_t::write_memory (unsigned address, unsigned length, char*buffer)
   gs_flip_header (h);
 
   /*send it, first the header, then the data*/
-  int r = write (fd, (char*)&h, sizeof (h)) && write (fd, buffer, length);
-  insist (r);
+  WRITE (fd, &h, sizeof (h));
+  WRITE (fd, buffer, length);
 
   wait_for_ack ();
 }
@@ -284,8 +326,7 @@ void gs_client_t::resume (int step)
   h.type = GS_RESUME;
   h.step = step;
   gs_flip_header (h);
-  int r = write (fd, (char*)&h, sizeof (h));
-  insist (r);
+  WRITE (fd, &h, sizeof (h));
 
   wait_for_ack ();
 }
@@ -298,8 +339,7 @@ void gs_client_t::send_and_wait (int type)
   gs_header_t h;
   h.type = type;
   gs_flip_header (h);
-  int r = write (fd, (char*)&h, sizeof (h));
-  insist (r);
+  WRITE (fd, &h, sizeof (h));
 
   wait_for_ack ();
 }
@@ -316,8 +356,7 @@ void gs_client_t::code (unsigned address, unsigned length)
   h.length = length;
   
   gs_flip_header (h);
-  int r = write (fd, (char*)&h, sizeof (h));
-  insist (r);
+  WRITE (fd, &h, sizeof (h));
 
   wait_for_ack ();
 }
@@ -331,8 +370,7 @@ void gs_client_t::insert_breakpoint (unsigned address)
   h.address = address;
   
   gs_flip_header (h);
-  int r = write (fd, (char*)&h, sizeof (h));
-  insist (r);
+  WRITE (fd, &h, sizeof (h));
 
   wait_for_ack ();
 }
@@ -346,8 +384,7 @@ void gs_client_t::remove_breakpoint (unsigned address)
   h.address = address;
   
   gs_flip_header (h);
-  int r = write (fd, (char*)&h, sizeof (h));
-  insist (r);
+  WRITE (fd, &h, sizeof (h));
 
   wait_for_ack ();
 }
