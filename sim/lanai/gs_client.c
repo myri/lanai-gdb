@@ -7,60 +7,12 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
+#include "better.h"
 #include "gs_client.h"
 #include "insist.h"
 
-/* Like read(), but retry instead of returning partial reads, and
-   perror on error. */
-
-static
-ssize_t
-_read (int fd, void *buf, size_t count)
-{
-  ssize_t red = 0;
-  while (count)
-    {
-      int r = read (fd, buf, count);
-      if (-1 == r)
-	{
-	  if (errno == EINTR || errno == EAGAIN)
-	    continue;
-	  perror ("my_read");
-	  return -1;
-	}
-      buf = (char *)buf + r;
-      count -= r;
-      red += r;
-    }
-  return red;
-}
-#define READ(f,b,c) insist (-1 != _read (f, b, c))
-
-/* Like write(), but retry instead of returning partial writes, and
-   perror on error. */
-
-static
-ssize_t
-_write (int fd, void *buf, size_t count)
-{
-  ssize_t red = 0;
-  while (count)
-    {
-      int r = write (fd, buf, count);
-      if (-1 == r)
-	{
-	  if (errno == EINTR || errno == EAGAIN)
-	    continue;
-	  perror ("my_write");
-	  return -1;
-	}
-      buf = (char *)buf + r;
-      count -= r;
-      red += r;
-    }
-  return red;
-}
-#define WRITE(f,b,c) insist (-1 != _write (f, b, c))
+#define READ(f,b,c) insist (0 == better_read (f, b, c))
+#define WRITE(f,b,c) insist (0 == better_write (f, b, c))
 
 gs_client_t::gs_client_t ()
 {

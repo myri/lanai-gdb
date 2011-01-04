@@ -2,7 +2,7 @@
 
 LANAIQDIR=@LANAIQDIR@
 
-SIM_OBJS = gdb.o sim-load.o gs_client.o insist.o sm_literate.o
+SIM_OBJS = gdb.o sim-load.o gs_client.o insist.o sm_literate.o better_read.o better_write.o
 
 
 SIM_RUN_OBJS = run.o
